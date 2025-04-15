@@ -132,7 +132,7 @@ export const Statistics: React.FC = () => {
       setLoading(true);
       try {
         const endpoint =
-          view === 'monthly' ? `${BASE_URL}/summary` : `${BASE_URL}/summary/weekly`;
+          view === 'monthly' ? `${BASE_URL}/mood/summary` : `${BASE_URL}/mood/summary/weekly`;
         const { data } = await axios.get(endpoint, { withCredentials: true });
         
         if (view === 'monthly') {
@@ -233,7 +233,7 @@ export const Statistics: React.FC = () => {
     setLoading(true);
     
     try {
-      const { data } = await axios.get(`${BASE_URL}/get_mood/${dateStr}`, { withCredentials: true });
+      const { data } = await axios.get(`${BASE_URL}/mood/get_mood/${dateStr}`, { withCredentials: true });
       setDailyMoods(data.moods);
       setSelectedPeriod(displayPeriod);
     } catch (error) {
@@ -251,7 +251,7 @@ export const Statistics: React.FC = () => {
     setLoading(true);
     
     try {
-      const { data } = await axios.get(`${BASE_URL}/get_mood/${today}`, { withCredentials: true });
+      const { data } = await axios.get(`${BASE_URL}/mood/get_mood/${today}`, { withCredentials: true });
       // Filter by the selected mood
       const filteredMoods = data.moods.filter((item: DailyMood) => item.mood === entry.mood);
       setDailyMoods(filteredMoods);
@@ -504,16 +504,20 @@ export const Statistics: React.FC = () => {
                     </Pie>
                     <Tooltip content={<CustomPieTooltip />} />
                     <Legend
-                      formatter={( entry) => {
-                        const { mood, count } = entry.payload;
-                        return (
-                          <span className="flex items-center gap-2">
-                            <span>{moodColors[mood].emoji}</span>
-                            <span className="text-sm">{mood} ({count} entries)</span>
-                          </span>
-                        );
-                      }}
-                    />
+                        formatter={(entry) => {
+                          if (!entry || !entry.payload || !entry.payload.mood) {
+                            return <span>Unknown</span>;
+                          }
+                          
+                          const { mood, count } = entry.payload;
+                          return (
+                            <span className="flex items-center gap-2">
+                              <span>{moodColors[mood]?.emoji || '❓'}</span>
+                              <span className="text-sm">{mood} ({count} entries)</span>
+                            </span>
+                          );
+                        }}
+                      />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>

@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   const fetchMoodData = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/get_all_mood`, { withCredentials: true });
+      const res = await axios.get(`${BASE_URL}/mood/get_all_mood`, { withCredentials: true });
       setMoodEntries(res.data.moods);
     } catch (error) {
       toast.error("Failed to load mood entries");
@@ -85,7 +85,7 @@ export default function Dashboard() {
       if (moodId) {
         // Edit existing mood entry
         await axios.put(
-          `${BASE_URL}/edit_mood/${moodId}`,
+          `${BASE_URL}/mood/edit_mood/${moodId}`,
           {
             mood: moodVal,
             journal: journal,
@@ -96,7 +96,7 @@ export default function Dashboard() {
       } else {
         // Add new mood entry
         await axios.post(
-          `${BASE_URL}/add_mood`,
+          `${BASE_URL}/mood/add_mood`,
           {
             mood: moodVal,
             journal: journal,
