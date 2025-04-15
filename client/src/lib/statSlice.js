@@ -1,13 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define the shape of your stats state
-interface StatsState {
-  monthly: any;
-  weekly: any;
-}
 
 // Initial state for stats
-const initialState: StatsState = {
+const initialState = {
   monthly: null,
   weekly: null,
 };
@@ -17,10 +12,10 @@ const statsSlice = createSlice({
   name: "stats",
   initialState,
   reducers: {
-    setMonthlyStats: (state, action: PayloadAction<any>) => {
+    setMonthlyStats: (state, action) => {
       state.monthly = action.payload;
     },
-    setWeeklyStats: (state, action: PayloadAction<any>) => {
+    setWeeklyStats: (state, action) => {
       state.weekly = action.payload;
     },
     resetStats: (state) => {

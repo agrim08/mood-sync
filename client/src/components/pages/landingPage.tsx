@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Calendar, Smile, BarChart2, Lock, ArrowRight } from "lucide-react";
+import { Calendar, Smile, BarChart2, Lock } from "lucide-react";
 
 export default function LandingPage() {
   return (

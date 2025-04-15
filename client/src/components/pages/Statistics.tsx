@@ -13,12 +13,12 @@ import {
   Cell,
   LabelList,
   Legend,
-  TooltipProps,
+  
 } from 'recharts';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Calendar, BarChart2, PieChart as PieChartIcon, Activity, Info } from 'lucide-react';
+import { ArrowLeft, Calendar, BarChart2, PieChart as PieChartIcon, Info } from 'lucide-react';
 import { BASE_URL } from '@/lib/constants';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
@@ -110,13 +110,13 @@ const getDateOfISOWeek = (week: number, year: number): string => {
   return monday.toISOString().split('T')[0];
 };
 
-const dateFormatter = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric',
-    year: 'numeric'
-  });
-};
+// const dateFormatter = (date: string): string => {
+//   return new Date(date).toLocaleDateString('en-US', { 
+//     month: 'short', 
+//     day: 'numeric',
+//     year: 'numeric'
+//   });
+// };
 
 export const Statistics: React.FC = () => {
   const [monthlySummary, setMonthlySummary] = useState<MoodSummary[]>([]);
@@ -154,7 +154,9 @@ export const Statistics: React.FC = () => {
     fetchSummary();
   }, [view]);
 
-  // Memoize chartData so its reference doesn't change on every render.
+
+  console.log(loading,selectedPeriod )
+
   const chartData: ChartDataItem[] = useMemo(() => {
     const dataSource = view === 'monthly' ? monthlySummary : weeklySummary;
     return dataSource.map((item) => {
@@ -502,7 +504,7 @@ export const Statistics: React.FC = () => {
                     </Pie>
                     <Tooltip content={<CustomPieTooltip />} />
                     <Legend
-                      formatter={(value, entry) => {
+                      formatter={( entry) => {
                         const { mood, count } = entry.payload;
                         return (
                           <span className="flex items-center gap-2">

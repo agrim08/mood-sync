@@ -1,2 +1,2 @@
 export const BASE_URL =
-  location.hostname === "localhost" ? "http://localhost:4000" : "/api";
+  import.meta.env.MODE === "development" ? "http://localhost:4000" : "/";

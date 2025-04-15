@@ -17,6 +17,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
         }
       })
       .catch((err) => {
+        console.log(err)
         setIsAuthenticated(false);
       })
       .finally(() => setLoading(false));
