@@ -32,7 +32,6 @@ app.use(
   })
 );
 
-app.use("/", apiLimiter);
 app.use("/api/auth", authRouter);
 app.use("/api/mood", moodRouter)
 
