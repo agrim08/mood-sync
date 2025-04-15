@@ -1,0 +1,30 @@
+// PrivateRoute.tsx
+import { useState, useEffect, JSX } from "react";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
+import { BASE_URL } from "@/lib/constants";
+
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}/user_details`, { withCredentials: true })
+      .then((res) => {
+        if (res.data && res.data.user) {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch((err) => {
+        setIsAuthenticated(false);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+export default PrivateRoute;

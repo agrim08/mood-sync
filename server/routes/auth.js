@@ -25,7 +25,8 @@ authRouter.post("/signup", async (req, res) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
       });
-      res.status(201).send("User created successfully");
+      return res.status(201).json({ message: "User created successfully", data: newUser });
+
     } catch (err) {
       console.log(err);
       res.status(500).send("INTERNAL SERVER ERROR");
@@ -47,7 +48,8 @@ authRouter.post("/login", async (req, res) => {
         res.cookie("token", token, {
           expires: new Date(Date.now() + 8 * 3600000), 
         });
-        res.status(200).send("Login successful",user);
+        return res.status(200).json({ message: "Login successful", data: user });
+
     } catch (err) {
         console.log(err);
         res.status(500).send("INTERNAL SERVER ERROR: ");
@@ -141,8 +143,7 @@ authRouter.get("/user_details", userAuth, async (req, res) => {
       }
   
       res.status(200).json({
-        username: user.username,
-        emailId: user.emailId,
+        user:user
       });
     } catch (err) {
       console.error(err);

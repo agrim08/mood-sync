@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.js';
 import moodRouter from './routes/mood.js';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 
 const app = express();
 
@@ -13,8 +14,19 @@ const apiLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again after 15 minutes.'
 });
 
+
+
 app.use(express.json());
 app.use(cookieParser())
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    preflightContinue: false,
+  })
+);
 
 app.use("/", apiLimiter);
 app.use("/", authRouter);
