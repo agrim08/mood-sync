@@ -1,21 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+// Define a type for stats
+type Stats = {
+  monthly: any | null;
+  weekly: any | null;
+};
 
-// Initial state for stats
-const initialState = {
+const initialState: Stats = {
   monthly: null,
   weekly: null,
 };
 
-// Create the slice
 const statsSlice = createSlice({
   name: "stats",
   initialState,
   reducers: {
-    setMonthlyStats: (state, action) => {
+    setMonthlyStats: (state, action: PayloadAction<any>) => {
       state.monthly = action.payload;
     },
-    setWeeklyStats: (state, action) => {
+    setWeeklyStats: (state, action: PayloadAction<any>) => {
       state.weekly = action.payload;
     },
     resetStats: (state) => {
@@ -25,6 +28,5 @@ const statsSlice = createSlice({
   },
 });
 
-// Export actions and reducer
 export const { setMonthlyStats, setWeeklyStats, resetStats } = statsSlice.actions;
 export default statsSlice.reducer;

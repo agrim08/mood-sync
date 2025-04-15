@@ -41,7 +41,7 @@ export default function Signup() {
       setIsLoading(true);
       // Make POST call to the /signup route with username, email, and password.
       const res = await axios.post(
-        `${BASE_URL}/signup`,
+        `${BASE_URL}/auth/signup`,
         {
           username: name, // sending username (or name) as required by the endpoint
           emailId,

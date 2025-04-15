@@ -77,7 +77,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const res = await axios.post(
-        `${BASE_URL}/login`,
+        `${BASE_URL}/auth/login`,
         { emailId, password },
         { withCredentials: true }
       );
@@ -108,7 +108,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `${BASE_URL}/forgot_password`,
+        `${BASE_URL}/auth/forgot_password`,
         { emailId },
         { withCredentials: true }
       );
@@ -144,7 +144,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `${BASE_URL}/reset_password`,
+        `${BASE_URL}/auth/reset_password`,
         { emailId, newPassword, otp },
         { withCredentials: true }
       );

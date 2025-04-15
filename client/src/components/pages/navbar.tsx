@@ -16,7 +16,7 @@ const Navbar = () => {
   useEffect(() => {
     if (!user) {
       axios
-        .get(`${BASE_URL}/user_details`, { withCredentials: true })
+        .get(`${BASE_URL}/auth/user_details`, { withCredentials: true })
         .then((res) => {
           if (res.data && res.data.user) {
             dispatch(addUser(res.data.user));
@@ -34,7 +34,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${BASE_URL}/logout`, { withCredentials: true });
+      await axios.get(`${BASE_URL}/auth/logout`, { withCredentials: true });
       dispatch(removeUser());
       navigate("/login");
     } catch (error) {

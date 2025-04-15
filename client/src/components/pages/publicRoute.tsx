@@ -10,7 +10,7 @@ const PublicRoute = ({ children }: { children: JSX.Element }) => {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/user_details`, { withCredentials: true })
+      .get(`${BASE_URL}/auth/user_details`, { withCredentials: true })
       .then((res) => {
         if (res.data && res.data.user) {
           setIsAuthenticated(true);

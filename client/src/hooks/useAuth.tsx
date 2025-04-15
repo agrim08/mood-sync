@@ -9,7 +9,7 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/user_details`, {
+        const res = await axios.get(`${BASE_URL}/auth/user_details`, {
           withCredentials: true,
         });
         setUser(res.data.user);
