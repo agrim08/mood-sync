@@ -69,7 +69,6 @@ export default function Dashboard() {
     }
   };
 
-  // Modified handler accepts mood and journal as parameters.
   const handleMoodSubmit = async (
     date: Date,
     moodId: string | undefined,
@@ -83,7 +82,6 @@ export default function Dashboard() {
 
     try {
       if (moodId) {
-        // Edit existing mood entry
         await axios.put(
           `${BASE_URL}/mood/edit_mood/${moodId}`,
           {
@@ -94,7 +92,6 @@ export default function Dashboard() {
         );
         toast.success("Mood updated successfully");
       } else {
-        // Add new mood entry
         await axios.post(
           `${BASE_URL}/mood/add_mood`,
           {
@@ -116,11 +113,9 @@ export default function Dashboard() {
   // Localized CalendarDay component, each with its own popover and input state.
   const CalendarDay = ({ date }: { date: Date }) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-    // Local state for mood and journal for this day
     const [localMood, setLocalMood] = useState("");
     const [localJournal, setLocalJournal] = useState("");
 
-    // Find any existing entry for this day.
     const entry = moodEntries.find(
       (e: { date: string; mood: keyof typeof moodColors; _id: string; journal?: string }) =>
         isSameDay(new Date(e.date), date)
@@ -129,7 +124,6 @@ export default function Dashboard() {
     const isCurrentMonth = isSameMonth(date, currentDate);
     const isToday = isSameDay(date, new Date());
 
-    // When popover opens, prefill the local state if an entry exists.
     useEffect(() => {
       if (isPopoverOpen) {
         setLocalMood(entry ? entry.mood : "");
@@ -137,7 +131,6 @@ export default function Dashboard() {
       }
     }, [isPopoverOpen, entry]);
 
-    // Determine background style based on mood
     const getMoodStyle = () => {
       if (!entry) return {};
       
@@ -155,43 +148,41 @@ export default function Dashboard() {
           <motion.div
             whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
             onClick={() => setIsPopoverOpen(true)}
-            className={`h-20 p-2 text-sm border rounded-lg transition-all cursor-pointer
+            className={`aspect-square p-1 sm:p-2 text-sm border rounded-lg transition-all cursor-pointer flex flex-col justify-between
               ${!isCurrentMonth ? "bg-gray-100 opacity-40" : ""}
               ${isToday ? "ring-2 ring-indigo-500 ring-opacity-60" : "border-gray-200"}`}
             style={getMoodStyle()}
           >
-            <div className="flex flex-col h-full justify-between">
-              <div className="flex justify-between items-center">
-                <span className={`text-xs font-semibold ${isToday ? "text-indigo-600" : "text-gray-700"}`}>
-                  {format(date, "d")}
-                </span>
-                {entry && (
-                  <motion.span 
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="text-xl"
-                  >
-                    {moodEmojis[entry.mood as keyof typeof moodEmojis]}
-                  </motion.span>
-                )}
-              </div>
-              {entry?.journal && (
-                <p className="text-xs text-gray-600 mt-1 truncate line-clamp-2 italic">
-                  "{entry.journal}"
-                </p>
-              )}
-              {!entry && isCurrentMonth && (
-                <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-70 transition-opacity">
-                  <span className="text-xs text-indigo-500 font-medium">Add mood</span>
-                </div>
+            <div className="flex justify-between items-center">
+              <span className={`text-xs font-semibold ${isToday ? "text-indigo-600" : "text-gray-700"}`}>
+                {format(date, "d")}
+              </span>
+              {entry && (
+                <motion.span 
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  className="text-lg sm:text-xl"
+                >
+                  {moodEmojis[entry.mood as keyof typeof moodEmojis]}
+                </motion.span>
               )}
             </div>
+            {entry?.journal && (
+              <p className="text-xs text-gray-600 mt-1 truncate line-clamp-1 sm:line-clamp-2 italic">
+                "{entry.journal}"
+              </p>
+            )}
+            {!entry && isCurrentMonth && (
+              <div className="w-full flex items-center justify-center opacity-0 hover:opacity-70 transition-opacity">
+                <span className="text-xs text-indigo-500 font-medium">Add</span>
+              </div>
+            )}
           </motion.div>
         </PopoverTrigger>
 
-        <PopoverContent className="w-80 p-0 overflow-hidden border border-indigo-100 shadow-lg">
+        <PopoverContent className="w-full max-w-xs sm:max-w-md p-0 overflow-hidden border border-indigo-100 shadow-lg">
           <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-3 text-white">
-            <h4 className="font-semibold text-lg">{format(date, "EEEE, MMMM d, yyyy")}</h4>
+            <h4 className="font-semibold text-base sm:text-lg">{format(date, "EEEE, MMMM d, yyyy")}</h4>
           </div>
 
           <div className="p-4 space-y-4">
@@ -244,7 +235,6 @@ export default function Dashboard() {
               <Button
                 className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
                 onClick={() => {
-                  // Submit using the local mood and journal values.
                   handleMoodSubmit(date, entry?._id, localMood, localJournal);
                   setIsPopoverOpen(false);
                 }}
@@ -264,75 +254,79 @@ export default function Dashboard() {
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-8 px-4 md:px-6"
+      className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-4 sm:py-6 px-3 sm:px-6"
     >
       <div className="max-w-6xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-6"
         >
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Mood Sync Journal
           </h1>
-          <p className="text-gray-600 mt-2">Track your emotional journey through time</p>
+          <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Track your emotional journey through time</p>
         </motion.div>
 
-        <div className="bg-white rounded-xl shadow-xl mb-8 p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div className="bg-white rounded-xl shadow-xl mb-6 p-3 sm:p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-3">
             <div className="flex items-center gap-2">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
+                className="p-1 sm:p-2 rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
                 onClick={() => setCurrentDate(subMonths(currentDate, 1))}
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </motion.button>
               
-              <h2 className="text-xl md:text-2xl font-semibold text-gray-800 px-2">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 px-2">
                 {format(currentDate, "MMMM yyyy")}
               </h2>
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
+                className="p-1 sm:p-2 rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
                 onClick={() => setCurrentDate(addMonths(currentDate, 1))}
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </motion.button>
             </div>
             
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Button 
                 variant="outline"
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-none"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-none text-sm py-2"
                 onClick={() => navigate("/stats")}
               >
-                <BarChart2 className="mr-2 h-4 w-4" /> View Stats
+                <BarChart2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> View Stats
               </Button>
             </motion.div>
           </div>
 
           {loading ? (
-            <div className="flex justify-center items-center h-60">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="flex justify-center items-center h-40 sm:h-60">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-7 gap-3">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div
-                  key={day}
-                  className="p-2 text-center text-sm font-medium text-indigo-600 border-b border-indigo-100"
-                >
-                  {day}
-                </div>
-              ))}
+            <div>
+              <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-2">
+                {["S", "M", "T", "W", "T", "F", "S"].map((day, idx) => (
+                  <div
+                    key={idx}
+                    className="text-center text-xs sm:text-sm font-medium text-indigo-600 pb-1 border-b border-indigo-100"
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
               
-              {daysInMonth.map((date) => (
-                <CalendarDay key={date.toISOString()} date={date} />
-              ))}
+              <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">              
+                {daysInMonth.map((date) => (
+                  <CalendarDay key={date.toISOString()} date={date} />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -341,21 +335,21 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl shadow-lg p-6"
+          className="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6"
         >
-          <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-800">
-            <Calendar className="h-5 w-5 mr-2 text-indigo-500" /> Mood Legend
+          <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center text-gray-800">
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-indigo-500" /> Mood Legend
           </h3>
           
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
             {Object.entries(moodEmojis).map(([mood, emoji]) => (
               <div 
                 key={mood} 
                 className="flex items-center gap-2 p-2 rounded-lg"
                 style={{ backgroundColor: `${moodColors[mood as keyof typeof moodColors]}20` }}
               >
-                <span className="text-xl">{emoji}</span>
-                <span className="text-sm font-medium">{mood}</span>
+                <span className="text-lg sm:text-xl">{emoji}</span>
+                <span className="text-xs sm:text-sm font-medium">{mood}</span>
               </div>
             ))}
           </div>

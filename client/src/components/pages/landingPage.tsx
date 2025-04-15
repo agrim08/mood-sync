@@ -339,9 +339,9 @@ export default function LandingPage() {
               MoodSync
             </div>
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
-              <a href="#" className="text-gray-600 hover:text-gray-900">Privacy Policy</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Terms of Service</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Contact</a>
+              <a href="https://www.linkedin.com/in/agrim-gupta08" className="text-gray-600 hover:text-gray-900">Privacy Policy</a>
+              <a href="https://www.linkedin.com/in/agrim-gupta08" className="text-gray-600 hover:text-gray-900">Terms of Service</a>
+              <a href="https://www.linkedin.com/in/agrim-gupta08" className="text-gray-600 hover:text-gray-900">Contact</a>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-100 text-center text-gray-500 text-sm">
