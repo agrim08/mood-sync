@@ -34,22 +34,18 @@ import { BASE_URL } from "@/lib/constants";
 import { toast } from "sonner";
 
 export default function Login() {
-  // Login states
   const [showPassword, setShowPassword] = useState(false);
   const [emailId, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setErrors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // Forgot password flow states
   const [otpDialogOpen, setOtpDialogOpen] = useState(false);
   const [newPasswordDialogOpen, setNewPasswordDialogOpen] = useState(false);
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Validates login inputs
   const validateInputs = () => {
     let validationError = "";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,7 +63,6 @@ export default function Login() {
     return validationError === "";
   };
 
-  // Standard login handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors("");
@@ -93,7 +88,6 @@ export default function Login() {
     }
   };
 
-  // Forgot password handler that triggers OTP email and opens OTP dialog
   const handleForgotPassword = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailId.trim()) {
@@ -123,7 +117,6 @@ export default function Login() {
     }
   };
 
-  // OTP submission handler: validates OTP length and opens new password dialog
   const handleSubmitOtp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (otp.trim().length !== 6) {
@@ -134,11 +127,10 @@ export default function Login() {
     setNewPasswordDialogOpen(true);
   };
 
-  // New password submission handler: updates password through API call
   const handleSubmitNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newPassword.trim().length < 6) {
-      toast.error("Password must be at least 6 characters.");
+    if (newPassword.trim().length < 8) {
+      toast.error("Password must be at least 8 characters.");
       return;
     }
     setIsLoading(true);

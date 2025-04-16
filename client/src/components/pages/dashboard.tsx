@@ -110,7 +110,6 @@ export default function Dashboard() {
     }
   };
 
-  // Localized CalendarDay component, each with its own popover and input state.
   const CalendarDay = ({ date }: { date: Date }) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [localMood, setLocalMood] = useState("");

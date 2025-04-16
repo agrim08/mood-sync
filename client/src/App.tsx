@@ -1,4 +1,3 @@
-// src/App.tsx
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import LandingPage from './components/pages/landingPage'

@@ -1,4 +1,3 @@
-// PublicRoute.tsx
 import { useState, useEffect, JSX } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";

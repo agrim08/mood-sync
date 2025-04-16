@@ -39,17 +39,15 @@ export default function Signup() {
     setError("");
     try {
       setIsLoading(true);
-      // Make POST call to the /signup route with username, email, and password.
       const res = await axios.post(
         `${BASE_URL}/auth/signup`,
         {
-          username: name, // sending username (or name) as required by the endpoint
+          username: name,
           emailId,
           password,
         },
         { withCredentials: true }
       );
-      // Check if the response data exists and dispatch user information to Redux store.
       if (res && res.data) {
         dispatch(addUser(res.data.data));
         navigate("/dashboard");

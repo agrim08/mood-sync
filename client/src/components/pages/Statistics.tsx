@@ -53,7 +53,7 @@ interface ChartDataItem {
   period: string;
   periodLabel: string;
   raw: MoodSummary;
-  [key: string]: any; // For dynamic mood properties
+  [key: string]: any;
 }
 
 interface PieDataItem {
@@ -141,7 +141,6 @@ export const Statistics: React.FC = () => {
           setWeeklySummary(data.weeklySummary);
         }
 
-        // Reset daily moods when switching views
         setDailyMoods([]);
         setSelectedPeriod(null);
       } catch (error) {
@@ -181,7 +180,6 @@ export const Statistics: React.FC = () => {
     });
   }, [view, monthlySummary, weeklySummary]);
 
-  // Process data for overall stats—this effect now runs only when chartData changes.
   useEffect(() => {
     if (chartData.length > 0) {
       const overallCounts = chartData.reduce((acc, cur) => {
@@ -252,7 +250,6 @@ export const Statistics: React.FC = () => {
     
     try {
       const { data } = await axios.get(`${BASE_URL}/mood/get_mood/${today}`, { withCredentials: true });
-      // Filter by the selected mood
       const filteredMoods = data.moods.filter((item: DailyMood) => item.mood === entry.mood);
       setDailyMoods(filteredMoods);
       setSelectedPeriod(`${entry.mood} entries`);
