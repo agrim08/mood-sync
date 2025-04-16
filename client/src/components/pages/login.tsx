@@ -166,7 +166,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center mb-6 gap-2">
           <Calendar className="h-6 w-6 text-purple-600" />
-          <h1 className="text-2xl font-bold text-gray-800">MoodTrack</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Mood-Sync</h1>
         </div>
         <Card className="w-full shadow-lg border-0">
           <CardHeader className="space-y-1">
