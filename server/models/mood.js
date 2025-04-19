@@ -16,7 +16,7 @@ const MoodSchema = new Schema({
   },
   journal: {
     type: String,
-    maxlength: 140,
+    maxlength: 150,
   },
   date: {
     type: Date,

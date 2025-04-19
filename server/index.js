@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
+import weeklyInsightRouter from './routes/weeklyInsight.js';
+import { startWeeklyInsightScheduler } from './config/schedulerService.js';
 
 const app = express();
 dotenv.config()
@@ -34,6 +36,10 @@ app.use(
 
 app.use("/api/auth", authRouter);
 app.use("/api/mood", moodRouter)
+app.use('/api/insights', weeklyInsightRouter);
+
+// Start the scheduler
+startWeeklyInsightScheduler();
 
 if ( process.env.NODE_ENV ==="production" ) {
   app. use(express.static(path.join(__dirname,"../client/dist")))

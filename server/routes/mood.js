@@ -9,6 +9,16 @@ moodRouter.post('/add_mood', userAuth, async (req, res) => {
   try {
     const { mood, journal, date } = req.body;
     const entryDate = date ? new Date(date) : new Date();
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const entryDay = new Date(entryDate.getFullYear(), entryDate.getMonth(), entryDate.getDate());
+
+    if (entryDay.getTime() !== today.getTime()) {
+      return res.status(400).json({ error: 'You can only add a mood for today.' });
+    }
+
     const start = new Date(entryDate);
     start.setHours(0, 0, 0, 0);
     const end = new Date(entryDate);
@@ -41,6 +51,7 @@ moodRouter.post('/add_mood', userAuth, async (req, res) => {
     res.status(500).json({ error: 'INTERNAL SERVER ERROR' });
   }
 });
+
 
 moodRouter.get('/get_all_mood', userAuth, async (req, res) => {
   try {
@@ -175,5 +186,27 @@ moodRouter.get('/summary/weekly', userAuth, async (req, res) => {
     res.status(500).json({ error: 'INTERNAL SERVER ERROR' });
   }
 });
+
+moodRouter.delete('/delete_mood/:moodId', userAuth, async (req, res) => {
+  try {
+    const deletedMood = await Mood.findOneAndDelete({
+      _id: req.params.moodId,
+      user: req.user._id,
+    });
+
+    if (!deletedMood) {
+      return res.status(404).json({ error: 'Mood entry not found.' });
+    }
+
+    res.status(200).json({
+      message: 'Mood entry deleted successfully.',
+      mood: deletedMood,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'INTERNAL SERVER ERROR' });
+  }
+});
+
 
 export default moodRouter;
