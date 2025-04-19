@@ -2,8 +2,11 @@ import express from "express";
 import User from "../models/user.js";
 import {userAuth} from "../middleware/userAuth.js";
 import nodemailer from 'nodemailer';
+import dotenv from "dotenv";
 
 const authRouter = express.Router();
+
+dotenv.config()
 
 authRouter.post("/signup", async (req, res) => {
     try {
@@ -145,6 +148,43 @@ authRouter.get("/user_details", userAuth, async (req, res) => {
       res.status(200).json({
         user:user
       });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "INTERNAL SERVER ERROR" });
+    }
+  });
+
+
+  authRouter.post("/send_mail", userAuth, async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).select('username emailId');
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+  
+      const reportLink = `http://localhost:5173/stats`;
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: user.emailId,
+        subject: 'Your Weekly Mood Report',
+        html: `
+          <p>Hello ${user.username},</p>
+          <p>Your weekly mood report is now available.</p>
+          <p><a href="${reportLink}">View your weekly report</a></p>
+        `,
+      };
+  
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent:', info.response);
+  
+      res.status(200).json({ message: 'Weekly report email sent.', info });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "INTERNAL SERVER ERROR" });
