@@ -69,37 +69,41 @@ export default function Dashboard() {
     }
   };
 
-  const handleMoodSubmit = async (
-    date: Date,
-    moodId: string | undefined,
-    moodVal: string,
-    journal: string
-  ) => {
-    if (!moodVal) {
-      toast.error("Please select a mood");
-      return;
+const handleMoodSubmit = async (
+  date: Date,
+  moodId: string | undefined,
+  moodVal: string,
+  journal: string
+) => {
+  if (!moodVal) {
+    toast.error("Please select a mood");
+    return;
+  }
+  try {
+    if (moodId) {
+      await axios.put(
+        `${BASE_URL}/mood/edit_mood/${moodId}`,
+        { mood: moodVal, journal },
+        { withCredentials: true }
+      );
+      toast.success("Mood updated successfully");
+    } else {
+      await axios.post(
+        `${BASE_URL}/mood/add_mood`,
+        { 
+          mood: moodVal, 
+          journal, 
+          date: format(date, "yyyy-MM-dd"), // Send date as "YYYY-MM-DD"
+        },
+        { withCredentials: true }
+      );
+      toast.success("Mood logged successfully");
     }
-    try {
-      if (moodId) {
-        await axios.put(
-          `${BASE_URL}/mood/edit_mood/${moodId}`,
-          { mood: moodVal, journal },
-          { withCredentials: true }
-        );
-        toast.success("Mood updated successfully");
-      } else {
-        await axios.post(
-          `${BASE_URL}/mood/add_mood`,
-          { mood: moodVal, journal, date, user: user?._id },
-          { withCredentials: true }
-        );
-        toast.success("Mood logged successfully");
-      }
-      await fetchMoodData();
-    } catch {
-      toast.error("Failed to save mood entry");
-    }
-  };
+    await fetchMoodData();
+  } catch {
+    toast.error("Failed to save mood entry");
+  }
+};
 
   const handleDeleteMood = async (moodId: string) => {
     try {

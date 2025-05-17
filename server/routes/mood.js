@@ -8,7 +8,8 @@ const moodRouter = express.Router();
 moodRouter.post('/add_mood', userAuth, async (req, res) => {
   try {
     const { mood, journal, date } = req.body;
-    const entryDate = date ? new Date(date) : new Date();
+    // Parse date string "YYYY-MM-DD" as midnight in server timezone, or use current date
+    const entryDate = date ? new Date(`${date}T00:00:00`) : new Date();
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
