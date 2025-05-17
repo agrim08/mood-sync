@@ -15,9 +15,9 @@ export async function generateWeeklyInsights(moodData) {
     const prompt = `
 You are a compassionate, data-driven mental‐wellness coach. You have just received a full week’s worth of the user’s mood entries and journal notes:
 
-\${moodSummary}
+${moodSummary}
 
-Each entry in \${moodSummary} is an object with \`date\` (YYYY-MM‑DD), \`mood\` (e.g. Happy, Anxious), and \`journal\` (text or empty string).  
+Each entry in ${moodSummary} is an object with \`date\` (YYYY-MM‑DD), \`mood\` (e.g. Happy, Anxious), and \`journal\` (text or empty string).  
 
 Generate a **single JSON object** with exactly these keys:  
 - \`moodTrends\`  
@@ -68,7 +68,7 @@ Generate a **single JSON object** with exactly these keys:
 
 ---
 
-Use **only** the data in \${moodSummary} (no assumptions). If there’s missing or sparse data, be explicit about that limitation.  
+Use **only** the data in ${moodSummary} (no assumptions). If there’s missing or sparse data, be explicit about that limitation.  
 `;
 
 
@@ -94,3 +94,4 @@ Use **only** the data in \${moodSummary} (no assumptions). If there’s missing 
     throw error;
   }
 }
+

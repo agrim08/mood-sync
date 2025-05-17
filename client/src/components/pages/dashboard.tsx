@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Smile, BarChart2, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { Smile, BarChart2, ChevronLeft, ChevronRight, Calendar, Trash2 } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { useSelector } from "react-redux";
@@ -62,7 +62,7 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`${BASE_URL}/mood/get_all_mood`, { withCredentials: true });
       setMoodEntries(res.data.moods);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load mood entries");
     } finally {
       setLoading(false);
@@ -79,34 +79,35 @@ export default function Dashboard() {
       toast.error("Please select a mood");
       return;
     }
-
     try {
       if (moodId) {
         await axios.put(
           `${BASE_URL}/mood/edit_mood/${moodId}`,
-          {
-            mood: moodVal,
-            journal: journal,
-          },
+          { mood: moodVal, journal },
           { withCredentials: true }
         );
         toast.success("Mood updated successfully");
       } else {
         await axios.post(
           `${BASE_URL}/mood/add_mood`,
-          {
-            mood: moodVal,
-            journal: journal,
-            date: date,
-            user: user?._id,
-          },
+          { mood: moodVal, journal, date, user: user?._id },
           { withCredentials: true }
         );
         toast.success("Mood logged successfully");
       }
       await fetchMoodData();
-    } catch (error) {
+    } catch {
       toast.error("Failed to save mood entry");
+    }
+  };
+
+  const handleDeleteMood = async (moodId: string) => {
+    try {
+      await axios.delete(`${BASE_URL}/mood/delete_mood/${moodId}`, { withCredentials: true });
+      toast.success("Mood entry deleted");
+      await fetchMoodData();
+    } catch {
+      toast.error("Failed to delete mood entry");
     }
   };
 
@@ -122,6 +123,7 @@ export default function Dashboard() {
 
     const isCurrentMonth = isSameMonth(date, currentDate);
     const isToday = isSameDay(date, new Date());
+    const canModify = Boolean(entry) || isToday;
 
     useEffect(() => {
       if (isPopoverOpen) {
@@ -132,7 +134,6 @@ export default function Dashboard() {
 
     const getMoodStyle = () => {
       if (!entry) return {};
-      
       const baseColor = moodColors[entry.mood as keyof typeof moodColors];
       return {
         backgroundColor: `${baseColor}25`,
@@ -145,36 +146,36 @@ export default function Dashboard() {
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <motion.div
-            whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
-            onClick={() => setIsPopoverOpen(true)}
-            className={`aspect-square p-1 sm:p-2 text-sm border rounded-lg transition-all cursor-pointer flex flex-col justify-between
+            whileHover={canModify ? { scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" } : {}}
+            onClick={() => canModify && setIsPopoverOpen(true)}
+            className={`relative aspect-square p-1 sm:p-2 text-sm border rounded-lg flex flex-col justify-between transition-all
               ${!isCurrentMonth ? "bg-gray-100 opacity-40" : ""}
-              ${isToday ? "ring-2 ring-indigo-500 ring-opacity-60" : "border-gray-200"}`}
+              ${isToday ? "ring-2 ring-indigo-500 ring-opacity-60" : "border-gray-200"}
+              ${!canModify ? "cursor-not-allowed" : "cursor-pointer"}`}
             style={getMoodStyle()}
           >
+            {entry && (
+              <Trash2
+                className="absolute bottom-1 left-1 h-4 w-4 text-red-500 hover:text-red-600 opacity-80 hover:opacity-100 z-10"
+                onClick={e => { e.stopPropagation(); handleDeleteMood(entry._id); }}
+              />
+            )}
+
             <div className="flex justify-between items-center">
-              <span className={`text-xs font-semibold ${isToday ? "text-indigo-600" : "text-gray-700"}`}>
-                {format(date, "d")}
-              </span>
+              <span className={`text-xs font-semibold ${isToday ? "text-indigo-600" : "text-gray-700"}`}>{format(date, "d")}</span>
               {entry && (
-                <motion.span 
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  className="text-lg sm:text-xl"
-                >
+                <motion.span initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-lg sm:text-xl">
                   {moodEmojis[entry.mood as keyof typeof moodEmojis]}
                 </motion.span>
               )}
             </div>
-            {entry?.journal && (
-              <p className="text-xs text-gray-600 mt-1 truncate line-clamp-1 sm:line-clamp-2 italic">
-                "{entry.journal}"
-              </p>
-            )}
             {!entry && isCurrentMonth && (
-              <div className="w-full flex items-center justify-center opacity-0 hover:opacity-70 transition-opacity">
-                <span className="text-xs text-indigo-500 font-medium">Add</span>
+              <div className={`w-full flex items-center justify-center ${isToday ? "opacity-0 hover:opacity-70 transition-opacity" : "opacity-50"}`}>
+                <span className={`text-xs ${isToday ? "text-indigo-500" : "text-gray-400"} font-medium`}>Add</span>
               </div>
+            )}
+            {entry?.journal && (
+              <p className="text-xs text-gray-600 mt-1 truncate line-clamp-1 sm:line-clamp-2 italic">"{entry.journal}"</p>
             )}
           </motion.div>
         </PopoverTrigger>
@@ -195,14 +196,7 @@ export default function Dashboard() {
                   {Object.entries(moodEmojis).map(([mood, emoji]) => (
                     <SelectItem key={mood} value={mood}>
                       <div className="flex items-center gap-2">
-                        <span 
-                          className="text-xl" 
-                          style={{
-                            textShadow: `0 0 2px ${moodColors[mood as keyof typeof moodColors]}40`
-                          }}
-                        >
-                          {emoji}
-                        </span>
+                        <span className="text-xl" style={{ textShadow: `0 0 2px ${moodColors[mood as keyof typeof moodColors]}40` }}>{emoji}</span>
                         <span>{mood}</span>
                       </div>
                     </SelectItem>
@@ -214,32 +208,14 @@ export default function Dashboard() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 flex items-center justify-between">
                 <span>Journal entry (optional)</span>
-                <span className="text-xs text-gray-400">
-                  {localJournal.length}/140
-                </span>
+                <span className="text-xs text-gray-400">{localJournal.length}/140</span>
               </label>
-              <Input
-                className="border-indigo-200 focus:ring-indigo-500"
-                placeholder="How was your day?"
-                value={localJournal}
-                onChange={(e) => setLocalJournal(e.target.value)}
-                maxLength={140}
-              />
+              <Input className="border-indigo-200 focus:ring-indigo-500" placeholder="How was your day?" value={localJournal} onChange={e => setLocalJournal(e.target.value)} maxLength={140} />
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
-                onClick={() => {
-                  handleMoodSubmit(date, entry?._id, localMood, localJournal);
-                  setIsPopoverOpen(false);
-                }}
-              >
-                <Smile className="mr-2 h-4 w-4" />
-                {entry ? "Update Entry" : "Save Mood"}
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600" onClick={() => { handleMoodSubmit(date, entry?._id, localMood, localJournal); setIsPopoverOpen(false); }}>
+                <Smile className="mr-2 h-4 w-4" /> {entry ? "Update Entry" : "Save Mood"}
               </Button>
             </motion.div>
           </div>
